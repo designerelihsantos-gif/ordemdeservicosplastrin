@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Técnica & Ordem de Produção Flexo</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #cbd5e1;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 992px) { .container { grid-template-columns: 1fr; } }
+        .panel { background: var(--card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        .tab-btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { background: var(--accent); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        h2, h3 { margin-top: 0; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; }
+        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        button:hover { opacity: 0.9; }
+        .btn-success { background: #10b981; }
+        
+        /* Layout da Ficha de Impressão */
+        .preview-os { font-size: 0.85rem; border: 2px solid #000; padding: 20px; color: #000; }
+        .os-title { font-size: 1.6rem; font-weight: bold; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+        .box-info { border: 1px solid #000; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .box-title { font-weight: bold; background: #e2e8f0; padding: 3px 8px; margin: -10px -10px 10px -10px; border-bottom: 1px solid #000; font-size: 0.75rem; text-transform: uppercase; }
+        .img-container { text-align: center; border: 1px dashed var(--border); padding: 10px; background: #fafafa; border-radius: 4px; height: 120px; display: flex; align-items: center; justify-content: center; }
+        .img-container img { max-height: 100%; max-width: 100%; object-fit: contain; }
+        .metric-highlight { background: #fef08a; font-size: 1.2rem; font-weight: bold; padding: 10px; border: 2px dashed #ca8a04; text-align: center; margin-top: 10px; }
+
+        /* Sentidos de bobina em SVG nativo */
+        .bobina-svg { width: 60px; height: 60px; }
+
+        @media print {
+            body * { visibility: hidden; }
+            .preview-os, .preview-os * { visibility: visible; }
+            .preview-os { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- PAINEL DE CONTROLE / ENTRADA -->
+    <div class="panel">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('emissao')">1. Emitir Ordem</button>
+            <button class="tab-btn" onclick="switchTab('cadastro')">2. Cadastrar Clientes/Artes</button>
+        </div>
+
+        <!-- ABA: EMISSÃO DA ORDEM -->
+        <div id="tab-emissao" class="tab-content active">
+            <h2>Geração de Ordem de Rodagem</h2>
+            <div class="form-group">
+                <label>Selecionar Cliente</label>
+                <select id="selectCliente" onchange="loadArtesDropdown()"></select>
+            </div>
+            <div class="form-group">
+                <label>Selecionar Arte Cadastrada</label>
+                <select id="selectArte" onchange="aplicarArteSelecionada()"></select>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Quantidade do Pedido (unidades)</label>
+                    <input type="number" id="prodQtd" value="10000" oninput="calcularMetragem()">
+                </div>
+                <div class="form-group">
+                    <label>Margem de Quebra/Setup (Metros)</label>
+                    <input type="number" id="prodQuebra" value="50" oninput="calcularMetragem()">
+                </div>
+            </div>
+            <button onclick="window.print()" class="btn-success">🖨️ Imprimir Ordem de Serviço</button>
+        </div>
+
+        <!-- ABA: CADASTRO DE ARTES -->
+        <div id="tab-cadastro" class="tab-content">
+            <h2>Cadastrar Nova Arte Técnica</h2>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Nome do Cliente</label>
+                    <input type="text" id="cadCliente" placeholder="Ex: Cervejaria Ambev">
+                </div>
+                <div class="form-group">
+                    <label>Nome da Arte / Produto</label>
+                    <input type="text" id="cadArte" placeholder="Ex: Rótulo IPA 350ml">
+                </div>
+            </div>
+
+            <h3>Dimensional da Faca (mm)</h3>
+            <div class="grid-4" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                <div class="form-group"><label>Largura (L)</label><input type="number" id="cadLarg" value="80"></div>
+                <div class="form-group"><label>Altura (A)</label><input type="number" id="cadAlt" value="100"></div>
+                <div class="form-group"><label>Gap Horiz.</label><input type="number" id="cadGapH" value="3"></div>
+                <div class="form-group"><label>Gap Vert.</label><input type="number" id="cadGapV" value="3"></div>
+            </div>
+
+            <h3>Especificações Técnicas Flexo</h3>
+            <div class="grid-3">
+                <div class="form-group"><label>Nº de Pistas</label><input type="number" id="cadPistas" value="2"></div>
+                <div class="form-group"><label>Nº de Cores</label><input type="number" id="cadCores" value="4"></div>
+                <div class="form-group"><label>Z (Engrenagem)</label><input type="text" id="cadZ" placeholder="Ex: Z-96"></div>
+            </div>
+
+            <h3>Substrato / Material</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Tipo de Substrato</label>
+                    <select id="cadSubstrato">
+                        <option value="BOPP Branco Brilho">BOPP Branco Brilho</option>
+                        <option value="BOPP Transparente">BOPP Transparente</option>
+                        <option value="BOPP Metalizado">BOPP Metalizado</option>
+                        <option value="Papel Couché Adesivo">Papel Couché Adesivo</option>
+                        <option value="Vinil Térmico">Vinil Térmico</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Largura do Material (mm)</label><input type="number" id="cadLargSub" value="170"></div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Sentido de Saída da Bobina</label>
+                    <select id="cadSentido">
+                        <option value="1">1 - Cabeça na Frente (Pista Fora)</option>
+                        <option value="2">2 - Pé na Frente (Pista Fora)</option>
+                        <option value="3">3 - Pé na Frente (Pista Dentro)</option>
+                        <option value="4">4 - Cabeça na Frente (Pista Dentro)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Prévia da Arte (Imagem)</label>
+                    <input type="file" id="cadImgFile" accept="image/*">
+                </div>
+            </div>
+
+            <button type="button" onclick="salvarCadastroNovaArte()">💾 Salvar no Banco de Dados</button>
+        </div>
+    </div>
+
+    <!-- PREVIEW DA ORDEM DE SERVIÇO / IMPRESSÃO -->
+    <div class="panel preview-os" id="printArea">
+        <div class="os-title">ORDEM DE PRODUÇÃO - FLEXOGRAFIA</div>
+        
+        <div class="grid-2">
+            <div class="box-info">
+                <div class="box-title">Identificação</div>
+                <div><strong>Cliente:</strong> <span id="vCliente">-</span></div>
+                <div><strong>Arte/Produto:</strong> <span id="vArte">-</span></div>
+            </div>
+            <div class="box-info">
+                <div class="box-title">Programação do Pedido</div>
+                <div><strong>Qtd Solicitada:</strong> <span id="vQtdPedido">0</span> un</div>
+                <div class="metric-highlight">
+                    RODAR: <span id="vMetrosLineares">0</span> Metros Lineares
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="box-info">
+                <div class="box-title">Dimensional Técnico da Faca</div>
+                <div><strong>Largura da Arte:</strong> <span id="vLarg">0</span> mm</div>
+                <div><strong>Altura da Arte:</strong> <span id="vAlt">0</span> mm</div>
+                <div><strong>Gap Horizontal:</strong> <span id="vGapH">0</span> mm</div>
+                <div><strong>Gap Vertical (Passo):</strong> <span id="vGapV">0</span> mm</div>
+            </div>
+Configuração de Máquina
+Número de Pistas: 0
+Quantidade de Cores: 0
+Z (Engrenagem/Porta-Clichê): -
+
+Especificação de Matéria-Prima (Substrato)
+
+Material: -
+Largura do Rolo/Substrato: 0 mm
+
+Sentido de Desenrolamento da Bobina
+
+
+Posição Padrão: Mod. -
+
+
+
+Visualização / Clichê da Arte
+
+
+Nenhuma imagem carregada
+
+
+
+
+// Banco de dados em memória inicializado com dados de exemplo técnicos
+let bancoDados = {
+"Exemplo Gráfica": [
+{
+arte: "Rótulo Suco Laranja 500ml", larg: 70, alt: 120, gapH: 2, gapV: 4,
+pistas: 2, cores: 3, z: "Z-84", substrato: "BOPP Transparente", largSub: 150, sentido: "1", imagem: ""
+}
+]
+};
+function switchTab(tabName) {
+document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+event.target.classList.add('active');
+document.getElementById('tab-' + tabName).classList.add('active');
+}
+function inicializarDropdowns() {
+const selectCli = document.getElementById('selectCliente');
+selectCli.innerHTML = "";
+for (let cliente in bancoDados) {
+let opt = document.createElement('option');
+opt.value = cliente; opt.innerText = cliente;
+selectCli.appendChild(opt);
+}
+loadArtesDropdown();
+}
+function loadArtesDropdown() {
+const cliente = document.getElementById('selectCliente').value;
+const selectArt = document.getElementById('selectArte');
+selectArt.innerHTML = "";
+if(!cliente) return;
+bancoDados[cliente].forEach((item, index) => {
+let opt = document.createElement('option');
+opt.value = index; opt.innerText = item.arte;
+selectArt.appendChild(opt);
+});
+aplicarArteSelecionada();
+}
+// Variável para armazenar imagem temporária em Base64 no cadastro
+let stringImagemBase64 = "";
+document.getElementById('cadImgFile').addEventListener('change', function(e) {
+const reader = new FileReader();
+reader.onload = function() { stringImagemBase64 = reader.result; };
+if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+});
+function salvarCadastroNovaArte() {
+const cli = document.getElementById('cadCliente').value.trim();
+const art = document.getElementById('cadArte').value.trim();
+if(!cli || !art) return alert("Por favor, preencha o Nome do Cliente e o Nome da Arte!");
+const novaArte = {
+arte: art,
+larg: parseFloat(document.getElementById('cadLarg').value) || 0,
+alt: parseFloat(document.getElementById('cadAlt').value) || 0,
+gapH: parseFloat(document.getElementById('cadGapH').value) || 0,
+gapV: parseFloat(document.getElementById('cadGapV').value) || 0,
+pistas: parseInt(document.getElementById('cadPistas').value) || 1,
+cores: parseInt(document.getElementById('cadCores').value) || 1,
+z: document.getElementById('cadZ').value || 'N/A',
+substrato: document.getElementById('cadSubstrato').value,
+largSub: parseFloat(document.getElementById('cadLargSub').value) || 0,
+sentido: document.getElementById('cadSentido').value,
+imagem: stringImagemBase64
+};
+if (!bancoDados[cli]) bancoDados[cli] = [];
+bancoDados[cli].push(novaArte);
+alert("Arte técnica cadastrada com sucesso!");
+// Reseta campos de texto de arte
+document.getElementById('cadArte').value = "";
+stringImagemBase64 = "";
+document.getElementById('cadImgFile').value = "";
+inicializarDropdowns();
+switchTab('emissao');
+}
+function aplicarArteSelecionada() {
+const cliente = document.getElementById('selectCliente').value;
+const index = document.getElementById('selectArte').value;
+if(!cliente || index === "") return;
+const dados = bancoDados[cliente][index];
+document.getElementById('vCliente').innerText = cliente;
+document.getElementById('vArte').innerText = dados.arte;
+document.getElementById('vLarg').innerText = dados.larg;
+document.getElementById('vAlt').innerText = dados.alt;
+document.getElementById('vGapH').innerText = dados.gapH;
+document.getElementById('vGapV').innerText = dados.gapV;
+document.getElementById('vPistas').innerText = dados.pistas;
+document.getElementById('vCores').innerText = dados.cores;
+document.getElementById('vZ').innerText = dados.z;
+document.getElementById('vSubstrato').innerText = dados.substrato;
+document.getElementById('vLargSub').innerText = dados.largSub;
+document.getElementById('vSentidoNum').innerText = dados.sentido;
+// Renderiza Imagem da Arte
+const img = document.getElementById('vPreviaArte');
+const placeholder = document.getElementById('vPreviaPlaceholder');
+if(dados.imagem) {
+img.src = dados.imagem; img.style.display = "block"; placeholder.style.display = "none";
+} else {
+img.style.display = "none"; placeholder.style.display = "block";
+}
+// Desenha Dinamicamente o Ícone de Sentido da Bobina solicitado
+renderizarIconeBobina(dados.sentido);
+calcularMetragem();
+}
+function renderizarIconeBobina(modelo) {
+const container = document.getElementById('vBobinaIcon');
+let setaDirecao = modelo === "1" || modelo === "4" ? "↑ Cabeça" : "↓ Pé";
+let posicaoPista = modelo === "1" || modelo === "2" ? "Pistas para Fora" : "Pistas para Dentro";
+container.innerHTML = `
+
+
+${posicaoPista}
+Saindo: ${setaDirecao}
+`;
+}
+function calcularMetragem() {
+const cliente = document.getElementById('selectCliente').value;
+const index = document.getElementById('selectArte').value;
+if(!cliente || index === "") return;
+const dados = bancoDados[cliente][index];
+const qtdPedido = parseFloat(document.getElementById('prodQtd').value) || 0;
+const metrosQuebra = parseFloat(document.getElementById('prodQuebra').value) || 0;
+document.getElementById('vQtdPedido').innerText = qtdPedido.toLocaleString('pt-BR');
+// FÓRMULA DE METRAGEM LINEAR INDUSTRIAL:
+// Metros = ((Altura da Etiqueta + Gap Vertical) * Qtd) / (Pistas * 1000) + Metros de Ajuste/Setup
+let passoVerticalMeters = (dados.alt + dados.gapV) / 1000;
+let metrosPuros = (qtdPedido * passoVerticalMeters) / dados.pistas;
+let totalMetrosRodagem = metrosPuros + metrosQuebra;
+document.getElementById('vMetrosLineares').innerText = Math.ceil(totalMetrosRodagem).toLocaleString('pt-BR');
+}
+// Inicialização da Tela
+inicializarDropdowns();

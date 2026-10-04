@@ -1,199 +1,396 @@
-html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha Técnica & Ordem de Produção Flexo</title>
-    <style>
-        :root {
-            --primary: #0f172a;
-            --accent: #2563eb;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #334155;
-            --border: #cbd5e1;
-        }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 992px) { .container { grid-template-columns: 1fr; } }
-        .panel { background: var(--card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        .tab-btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .tab-btn.active { background: var(--accent); color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        h2, h3 { margin-top: 0; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-top: 15px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; }
-        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        button:hover { opacity: 0.9; }
-        .btn-success { background: #10b981; }
-        
-        /* Layout da Ficha de Impressão */
-        .preview-os { font-size: 0.85rem; border: 2px solid #000; padding: 20px; color: #000; background: #fff; }
-        .os-title { font-size: 1.6rem; font-weight: bold; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-        .box-info { border: 1px solid #000; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-        .box-title { font-weight: bold; background: #e2e8f0; padding: 3px 8px; margin: -10px -10px 10px -10px; border-bottom: 1px solid #000; font-size: 0.75rem; text-transform: uppercase; }
-        .img-container { text-align: center; border: 1px dashed var(--border); padding: 10px; background: #fafafa; border-radius: 4px; height: 130px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
-        .img-container img { max-height: 100%; max-width: 100%; object-fit: contain; }
-        .metric-highlight { background: #fef08a; font-size: 1.2rem; font-weight: bold; padding: 10px; border: 2px dashed #ca8a04; text-align: center; margin-top: 10px; }
-        .bobina-container { display: flex; align-items: center; gap: 12px; }
-        .bobina-visual { width: 65px; height: 65px; border: 1px solid #000; background: #fff; position: relative; display: flex; align-items: center; justify-content: center; }
-
-        @media print {
-            body * { visibility: hidden; }
-            .preview-os, .preview-os * { visibility: visible; }
-            .preview-os { position: absolute; left: 0; top: 0; width: 100%; border: none; padding: 0; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OS - Gráfica de Rótulos</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;background:#eef1f5;margin:0;color:#222}
+nav{background:#1e3a5f;display:flex;flex-wrap:wrap}
+nav button{background:none;border:none;color:#cfd8e3;padding:14px 18px;font-size:15px;cursor:pointer}
+nav button.ativo{background:#eef1f5;color:#1e3a5f;font-weight:bold}
+.aba{display:none;padding:20px}.aba.ativa{display:block}
+.folha{max-width:950px;margin:0 auto;background:#fff;padding:25px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.toolbar{max-width:950px;margin:0 auto 12px;display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 15px;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:#fff;background:#1e5bb8}
+.verde{background:#1f9d55}.cinza{background:#6b7280}.vermelho{background:#c53030}.peq{padding:4px 9px;font-size:12px}
+header{display:flex;justify-content:space-between;border-bottom:3px solid #1e5bb8;padding-bottom:10px;margin-bottom:12px;gap:10px}
+header input.nome{font-size:20px;font-weight:bold;color:#1e5bb8}
+.num{text-align:right;white-space:nowrap}.num h1{margin:0;font-size:19px}.num span{font-size:24px;color:#c53030;font-weight:bold}
+h2{font-size:13px;background:#1e5bb8;color:#fff;padding:6px 10px;margin:14px 0 8px;border-radius:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}
+label{font-size:11px;color:#555;display:block;margin-bottom:2px}
+input,select,textarea{width:100%;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px;font-family:inherit}
+textarea{min-height:50px;resize:vertical}
+input[readonly]{background:#f3f6fa;font-weight:bold}
+.imgs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.caixa-img{border:2px dashed #bbb;border-radius:6px;min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa}
+.caixa-img img{max-width:100%;max-height:260px}
+.resultado{background:#e8f6ee;border:2px solid #1f9d55;border-radius:6px;padding:10px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.resultado b{font-size:24px;color:#1f9d55;display:block}
+.alerta{color:#c53030;font-weight:bold;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th{background:#f0f3f8;text-align:left;padding:6px;border:1px solid #ddd}td{border:1px solid #ddd;padding:5px;vertical-align:middle}
+td img{max-height:45px}
+.assin{display:flex;gap:40px;margin-top:45px}.assin div{flex:1;border-top:1px solid #000;text-align:center;font-size:12px;padding-top:4px}
+@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.c3,.c4{grid-column:span 2}.imgs{grid-template-columns:1fr}}
+@media print{
+ nav,.toolbar,.no-print{display:none!important}
+ body{background:#fff}.aba{padding:0}.folha{box-shadow:none;padding:0}
+ input,select,textarea{border:none;padding:2px 0;appearance:none;-webkit-appearance:none;background:none!important}
+ textarea{resize:none}.caixa-img{border:1px solid #ccc;min-height:150px}
+ @page{size:A4;margin:10mm}
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <!-- PAINEL DE CONTROLE / ENTRADA -->
-    <div class="panel">
-        <div class="tabs">
-            <button class="tab-btn active" id="btn-emissao" onclick="switchTab('emissao')">1. Emitir Ordem</button>
-            <button class="tab-btn" id="btn-cadastro" onclick="switchTab('cadastro')">2. Cadastrar Artes</button>
-        </div>
+<nav class="no-print">
+ <button class="ativo" onclick="aba('os',this)">📄 Ordem de Serviço</button>
+ <button onclick="aba('artes',this)">🎨 Artes</button>
+ <button onclick="aba('clientes',this)">👥 Clientes</button>
+ <button onclick="aba('substratos',this)">🧻 Substratos</button>
+ <button onclick="aba('historico',this)">🗂️ Histórico</button>
+</nav>
 
-        <!-- ABA: EMISSÃO DA ORDEM -->
-        <div id="tab-emissao" class="tab-content active">
-            <h2>Geração de Ordem de Rodagem</h2>
-            <div class="form-group">
-                <label>Selecionar Cliente</label>
-                <select id="selectCliente" onchange="loadArtesDropdown()"></select>
-            </div>
-            <div class="form-group">
-                <label>Selecionar Arte Cadastrada</label>
-                <select id="selectArte" onchange="aplicarArteSelecionada()"></select>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Quantidade do Pedido (unidades)</label>
-                    <input type="number" id="prodQtd" value="10000" oninput="calcularMetragem()">
-                </div>
-                <div class="form-group">
-                    <label>Margem de Quebra/Setup (Metros)</label>
-                    <input type="number" id="prodQuebra" value="50" oninput="calcularMetragem()">
-                </div>
-            </div>
-            <button onclick="window.print()" class="btn-success">🖨️ Imprimir Ordem de Serviço</button>
-        </div>
+<!-- ================= ORDEM DE SERVIÇO ================= -->
+<section class="aba ativa" id="os">
+ <div class="toolbar">
+  <button class="btn" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+  <button class="btn verde" onclick="salvarOS()">💾 Salvar OS</button>
+  <button class="btn cinza" onclick="novaOS()">➕ Nova OS</button>
+ </div>
+ <div class="folha">
+  <header>
+   <div style="flex:1">
+    <input class="nome emp" id="emp_nome" placeholder="Nome da gráfica">
+    <input class="emp" id="emp_dados" placeholder="CNPJ • Telefone • E-mail">
+   </div>
+   <div class="num"><h1>ORDEM DE SERVIÇO</h1>Nº <span id="numOS">0001</span></div>
+  </header>
 
-        <!-- ABA: CADASTRO DE ARTES -->
-        <div id="tab-cadastro" class="tab-content">
-            <h2>Cadastrar Nova Arte Técnica</h2>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Nome do Cliente</label>
-                    <input type="text" id="cadCliente" placeholder="Ex: Cervejaria Ambev">
-                </div>
-                <div class="form-group">
-                    <label>Nome da Arte / Produto</label>
-                    <input type="text" id="cadArte" placeholder="Ex: Rótulo IPA 350ml">
-                </div>
-            </div>
+  <div class="grid">
+   <div><label>Data</label><input type="date" id="os_data"></div>
+   <div><label>Prazo de entrega</label><input type="date" id="os_prazo"></div>
+   <div><label>Responsável</label><input id="os_resp"></div>
+   <div><label>Status</label><select id="os_status"><option>Aberta</option><option>Em produção</option><option>Finalizada</option><option>Entregue</option></select></div>
+  </div>
 
-            <h3>Dimensional da Faca (mm)</h3>
-            <div class="grid-4">
-                <div class="form-group"><label>Largura (L)</label><input type="number" id="cadLarg" value="80"></div>
-                <div class="form-group"><label>Altura (A)</label><input type="number" id="cadAlt" value="100"></div>
-                <div class="form-group"><label>Gap Horiz.</label><input type="number" id="cadGapH" value="3"></div>
-                <div class="form-group"><label>Gap Vert.</label><input type="number" id="cadGapV" value="3"></div>
-            </div>
+  <h2>CLIENTE E ARTE</h2>
+  <div class="grid">
+   <div class="c2"><label>Cliente</label><select id="os_cliente" onchange="filtrarArtes()"></select></div>
+   <div class="c2"><label>Nome da arte</label><select id="os_arte" onchange="puxarArte()"></select></div>
+   <div><label>Quantidade a rodar (rótulos)</label><input type="number" id="os_qtd" oninput="calcular()"></div>
+   <div><label>Perda / acerto (%)</label><input type="number" id="os_perda" value="5" oninput="calcular()"></div>
+   <div class="c2"><label>Pedido / referência do cliente</label><input id="os_ref"></div>
+  </div>
 
-            <h3>Especificações Técnicas Flexo</h3>
-            <div class="grid-3">
-                <div class="form-group"><label>Nº de Pistas</label><input type="number" id="cadPistas" value="2"></div>
-                <div class="form-group"><label>Nº de Cores</label><input type="number" id="cadCores" value="4"></div>
-                <div class="form-group"><label>Z (Engrenagem)</label><input type="text" id="cadZ" placeholder="Ex: Z-96"></div>
-            </div>
+  <h2>DADOS TÉCNICOS</h2>
+  <div class="grid">
+   <div><label>Largura da arte (mm)</label><input type="number" step="0.1" id="t_larg" oninput="calcular()"></div>
+   <div><label>Altura da arte (mm)</label><input type="number" step="0.1" id="t_alt" oninput="calcular(true)"></div>
+   <div><label>Gap horizontal (mm)</label><input type="number" step="0.1" id="t_gaph" oninput="calcular()"></div>
+   <div><label>Gap vertical (mm)</label><input type="number" step="0.1" id="t_gapv" oninput="calcular(true)"></div>
+   <div><label>Qtd. de pistas</label><input type="number" id="t_pistas" oninput="calcular()"></div>
+   <div><label>Z da engrenagem</label><input type="number" id="t_z" oninput="calcular(true)"></div>
+   <div><label>Repetições (no cilindro)</label><input type="number" id="t_rep" oninput="calcular()"></div>
+   <div><label>Circunferência (mm)</label><input id="t_circ" readonly></div>
+   <div><label>Qtd. de cores</label><input type="number" id="t_ncores"></div>
+   <div class="c3"><label>Quais cores</label><input id="t_cores" placeholder="Ex.: Ciano, Magenta, Amarelo, Preto, Pantone 485C"></div>
+   <div class="c2"><label>Substrato</label><select id="t_sub"></select></div>
+   <div><label>Largura do substrato (mm)</label><input type="number" id="t_lsub" oninput="calcular()"></div>
+   <div><label>Largura útil (mm)</label><input id="t_lutil" readonly><div id="alertaLarg" class="alerta"></div></div>
+  </div>
 
-            <h3>Substrato / Material</h3>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Tipo de Substrato</label>
-                    <select id="cadSubstrato">
-                        <option value="BOPP Branco Brilho">BOPP Branco Brilho</option>
-                        <option value="BOPP Transparente">BOPP Transparente</option>
-                        <option value="BOPP Metalizado">BOPP Metalizado</option>
-                        <option value="Papel Couché Adesivo">Papel Couché Adesivo</option>
-                        <option value="Vinil Térmico">Vinil Térmico</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Largura do Material (mm)</label><input type="number" id="cadLargSub" value="170"></div>
-            </div>
+  <div class="grid" style="margin-top:10px">
+   <div class="resultado c2">METROS LINEARES A RODAR<b id="r_metros">0 m</b><small id="r_detalhe"></small></div>
+   <div class="resultado"><span>Voltas do cilindro</span><b id="r_voltas" style="font-size:20px">0</b></div>
+   <div class="resultado"><span>Rótulos por volta</span><b id="r_porvolta" style="font-size:20px">0</b></div>
+  </div>
 
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Sentido da Bobina</label>
-                    <select id="cadSentido">
-                        <option value="1">Mod. 1 - Cabeça na Frente (Fora)</option>
-                        <option value="2">Mod. 2 - Pé na Frente (Fora)</option>
-                        <option value="3">Mod. 3 - Pé na Frente (Dentro)</option>
-                        <option value="4">Mod. 4 - Cabeça na Frente (Dentro)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Prévia da Arte (Imagem)</label>
-                    <input type="file" id="cadImgFile" accept="image/*">
-                </div>
-            </div>
+  <h2>PRÉVIA DA ARTE E SENTIDO DA BOBINA</h2>
+  <div class="imgs">
+   <div><label>Prévia da arte (vem do cadastro da arte)</label><div class="caixa-img" id="prevArte">Sem imagem</div></div>
+   <div><label>Sentido da bobina</label><div class="caixa-img" id="prevBobina">Sem imagem</div>
+    <input class="no-print" type="file" accept="image/*" style="margin-top:5px" onchange="carregarImg(this,src=>{osBobina=src;mostrarImg('prevBobina',src)})">
+    <input id="os_sentido" placeholder="Descrição do sentido (ex.: saída pela cabeça, tubete 76mm)" style="margin-top:5px">
+   </div>
+  </div>
 
-            <button type="button" onclick="salvarCadastroNovaArte()">💾 Salvar no Banco de Dados</button>
-        </div>
-    </div>
+  <h2>OBSERVAÇÕES</h2>
+  <textarea id="os_obs"></textarea>
 
-    <!-- PREVIEW DA ORDEM DE SERVIÇO / IMPRESSÃO -->
-    <div class="panel preview-os" id="printArea">
-        <div class="os-title">ORDEM DE PRODUÇÃO - FLEXOGRAFIA</div>
-        
-        <div class="grid-2">
-            <div class="box-info">
-                <div class="box-title">Identificação</div>
-                <div><strong>Cliente:</strong> <span id="vCliente">-</span></div>
-                <div><strong>Arte/Produto:</strong> <span id="vArte">-</span></div>
-            </div>
-            <div class="box-info">
-                <div class="box-title">Programação do Pedido</div>
-                <div><strong>Qtd Solicitada:</strong> <span id="vQtdPedido">0</span> un</div>
-                <div class="metric-highlight">
-                    RODAR: <span id="vMetrosLineares">0</span> Metros Lineares
-                </div>
-            </div>
-        </div>
+  <div class="assin"><div>Responsável pela produção</div><div>Conferência / Qualidade</div></div>
+ </div>
+</section>
 
-        <div class="grid-2">
-            <div class="box-info">
-                <div class="box-title">Dimensional Técnico da Faca</div>
-                <div><strong>Largura da Arte:</strong> <span id="vLarg">0</span> mm</div>
-function renderizarIconeBobina(modelo) {
-    const container = document.getElementById('vBobinaIcon');
-    const texto = document.getElementById('vSentidoTexto');
-    
-    let descTexto = "";
-    let svgContent = "";
+<!-- ================= ARTES ================= -->
+<section class="aba" id="artes">
+ <div class="folha">
+  <h2>CADASTRAR / EDITAR ARTE</h2>
+  <input type="hidden" id="a_id">
+  <div class="grid">
+   <div class="c2"><label>Nome da arte</label><input id="a_nome"></div>
+   <div class="c2"><label>Cliente</label><select id="a_cliente"></select></div>
+   <div><label>Largura (mm)</label><input type="number" step="0.1" id="a_larg"></div>
+   <div><label>Altura (mm)</label><input type="number" step="0.1" id="a_alt"></div>
+   <div><label>Gap horizontal (mm)</label><input type="number" step="0.1" id="a_gaph"></div>
+   <div><label>Gap vertical (mm)</label><input type="number" step="0.1" id="a_gapv"></div>
+   <div><label>Pistas</label><input type="number" id="a_pistas"></div>
+   <div><label>Repetições</label><input type="number" id="a_rep"></div>
+   <div><label>Z da engrenagem</label><input type="number" id="a_z"></div>
+   <div><label>Qtd. de cores</label><input type="number" id="a_ncores"></div>
+   <div class="c4"><label>Quais cores</label><input id="a_cores"></div>
+   <div class="c2"><label>Substrato</label><select id="a_sub"></select></div>
+   <div><label>Largura do substrato (mm)</label><input type="number" id="a_lsub"></div>
+   <div><label>Prévia da arte</label><input type="file" accept="image/*" onchange="carregarImg(this,src=>{artePrev=src;mostrarImg('a_prev',src)})"></div>
+   <div class="c4"><div class="caixa-img" id="a_prev" style="min-height:120px">Sem imagem</div></div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px">
+   <button class="btn verde" onclick="salvarArte()">💾 Salvar arte</button>
+   <button class="btn cinza" onclick="limparArte()">Limpar</button>
+  </div>
+  <input placeholder="🔎 Buscar arte ou cliente..." style="margin-top:15px" oninput="listarArtes(this.value)">
+  <table><thead><tr><th>Prévia</th><th>Arte</th><th>Cliente</th><th>Medida</th><th>Pistas/Z</th><th></th></tr></thead><tbody id="listaArtes"></tbody></table>
+ </div>
+</section>
 
-    if (modelo === "1") {
-        descTexto = "Mod. 1: Pistas para Fora<br>Saída: Cabeça na Frente";
-        svgContent = '<svg width="50" height="50" viewBox="0 0 50 50"><circle cx="20" cy="35" r="10" fill="none" stroke="#000" stroke-width="2"/><path d="M 30 35 L 30 15 L 45 15" fill="none" stroke="#000" stroke-width="3"/><path d="M 40 10 L 45 15 L 40 20" fill="none" stroke="#000" stroke-width="2"/><text x="32" y="10" font-size="7" font-weight="bold">CABEÇA</text></svg>';
-    } else if (modelo === "2") {
-        descTexto = "Mod. 2: Pistas para Fora<br>Saída: Pé na Frente";
-        svgContent = '<svg width="50" height="50" viewBox="0 0 50 50"><circle cx="20" cy="35" r="10" fill="none" stroke="#000" stroke-width="2"/><path d="M 30 35 L 30 15 L 45 15" fill="none" stroke="#000" stroke-width="3"/><path d="M 40 10 L 45 15 L 40 20" fill="none" stroke="#000" stroke-width="2"/><text x="35" y="10" font-size="7" font-weight="bold">PÉ</text></svg>';
-    } else if (modelo === "3") {
-        descTexto = "Mod. 3: Pistas para Dentro<br>Saída: Pé na Frente";
-        svgContent = '<svg width="50" height="50" viewBox="0 0 50 50"><circle cx="20" cy="35" r="10" fill="none" stroke="#000" stroke-width="2"/><path d="M 30 35 L 30 15 L 45 15" fill="none" stroke="#000" stroke-width="3" stroke-dasharray="3,3"/><path d="M 40 10 L 45 15 L 40 20" fill="none" stroke="#000" stroke-width="2"/><text x="35" y="10" font-size="7" font-weight="bold">PÉ</text></svg>';
-    } else if (modelo === "4") {
-        descTexto = "Mod. 4: Pistas para Dentro<br>Saída: Cabeça na Frente";
-        svgContent = '<svg width="50" height="50" viewBox="0 0 50 50"><circle cx="20" cy="35" r="10" fill="none" stroke="#000" stroke-width="2"/><path d="M 30 35 L 30 15 L 45 15" fill="none" stroke="#000" stroke-width="3" stroke-dasharray="3,3"/><path d="M 40 10 L 45 15 L 40 20" fill="none" stroke="#000" stroke-width="2"/><text x="32" y="10" font-size="7" font-weight="bold">CABEÇA</text></svg>';
-    }
+<!-- ================= CLIENTES ================= -->
+<section class="aba" id="clientes">
+ <div class="folha">
+  <h2>CADASTRAR / EDITAR CLIENTE</h2>
+  <input type="hidden" id="c_id">
+  <div class="grid">
+   <div class="c2"><label>Nome / Razão social</label><input id="c_nome"></div>
+   <div><label>CNPJ / CPF</label><input id="c_doc"></div>
+   <div><label>Telefone</label><input id="c_tel"></div>
+   <div class="c2"><label>Contato</label><input id="c_contato"></div>
+   <div class="c2"><label>E-mail</label><input id="c_email"></div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px">
+   <button class="btn verde" onclick="salvarCliente()">💾 Salvar cliente</button>
+   <button class="btn cinza" onclick="limparCliente()">Limpar</button>
+  </div>
+  <table><thead><tr><th>Nome</th><th>Documento</th><th>Contato</th><th>Telefone</th><th></th></tr></thead><tbody id="listaClientes"></tbody></table>
+ </div>
+</section>
 
-    container.innerHTML = svgContent;
-    texto.innerHTML = descTexto;
+<!-- ================= SUBSTRATOS ================= -->
+<section class="aba" id="substratos">
+ <div class="folha">
+  <h2>SUBSTRATOS UTILIZADOS</h2>
+  <div class="grid">
+   <div class="c3"><label>Novo substrato</label><input id="s_nome" placeholder="Ex.: BOPP Branco Brilho"></div>
+   <div style="display:flex;align-items:flex-end"><button class="btn verde" style="width:100%" onclick="addSubstrato()">+ Adicionar</button></div>
+  </div>
+  <table><thead><tr><th>Substrato</th><th style="width:60px"></th></tr></thead><tbody id="listaSub"></tbody></table>
+  <h2>BACKUP DOS DADOS</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <button class="btn" onclick="exportar()">⬇️ Exportar backup</button>
+   <label class="btn cinza" style="color:#fff;margin:0">⬆️ Importar backup<input type="file" accept=".json" hidden onchange="importar(this)"></label>
+  </div>
+ </div>
+</section>
+
+<!-- ================= HISTÓRICO ================= -->
+<section class="aba" id="historico">
+ <div class="folha">
+  <h2>ORDENS DE SERVIÇO SALVAS</h2>
+  <input placeholder="🔎 Buscar..." oninput="listarHist(this.value)">
+  <table><thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Arte</th><th>Qtd</th><th>Metros</th><th>Status</th><th></th></tr></thead><tbody id="listaHist"></tbody></table>
+ </div>
+</section>
+
+<script>
+const PASSO = 3.175; // 1/8 de polegada por dente
+const $ = id => document.getElementById(id);
+const db = {
+ get: (k, d) => JSON.parse(localStorage.getItem('rot_' + k) || JSON.stringify(d)),
+ set: (k, v) => { try { localStorage.setItem('rot_' + k, JSON.stringify(v)) } catch (e) { alert('Memória do navegador cheia! Exporte um backup e remova itens antigos.') } }
+};
+let clientes = db.get('clientes', []), artes = db.get('artes', []), ordens = db.get('ordens', []);
+let substratos = db.get('substratos', ['BOPP Branco', 'BOPP Transparente', 'BOPP Metalizado', 'Couché', 'Térmico', 'Vinil']);
+let artePrev = '', osBobina = '', osArtePrev = '', osEditando = null;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const n = id => parseFloat($(id).value) || 0;
+
+function aba(id, btn) {
+ document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+ document.querySelectorAll('nav button').forEach(b => b.classList.remove('ativo'));
+ $(id).classList.add('ativa'); btn.classList.add('ativo');
+ if (id === 'historico') listarHist();
 }
+
+/* ---------- Imagens (reduz para economizar memória) ---------- */
+function carregarImg(input, cb) {
+ const f = input.files[0]; if (!f) return;
+ const r = new FileReader();
+ r.onload = e => {
+  const img = new Image();
+  img.onload = () => {
+   const max = 800, esc = Math.min(1, max / Math.max(img.width, img.height));
+   const c = document.createElement('canvas');
+   c.width = img.width * esc; c.height = img.height * esc;
+   const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+   ctx.drawImage(img, 0, 0, c.width, c.height);
+   cb(c.toDataURL('image/jpeg', 0.8));
+  };
+  img.src = e.target.result;
+ };
+ r.readAsDataURL(f);
+}
+function mostrarImg(id, src) { $(id).innerHTML = src ? `<img src="${src}">` : 'Sem imagem'; }
+
+/* ---------- Selects ---------- */
+function preencherSelects() {
+ const optCli = '<option value="">-- selecione --</option>' + clientes.slice().sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+ const optSub = '<option value="">-- selecione --</option>' + substratos.map(s => `<option>${esc(s)}</option>`).join('');
+ ['os_cliente', 'a_cliente'].forEach(id => { const v = $(id).value; $(id).innerHTML = optCli; $(id).value = v; });
+ ['t_sub', 'a_sub'].forEach(id => { const v = $(id).value; $(id).innerHTML = optSub; $(id).value = v; });
+ filtrarArtes(true);
+}
+function filtrarArtes(manter) {
+ const cli = $('os_cliente').value, v = $('os_arte').value;
+ const lista = artes.filter(a => !cli || a.cliente === cli);
+ $('os_arte').innerHTML = '<option value="">-- selecione --</option>' + lista.map(a => `<option value="${a.id}">${esc(a.nome)}</option>`).join('');
+ if (manter) $('os_arte').value = v;
+}
+function puxarArte() {
+ const a = artes.find(x => x.id === $('os_arte').value); if (!a) return;
+ if (!$('os_cliente').value) { $('os_cliente').value = a.cliente; filtrarArtes(); $('os_arte').value = a.id; }
+ const map = { t_larg: 'larg', t_alt: 'alt', t_gaph: 'gaph', t_gapv: 'gapv', t_pistas: 'pistas', t_z: 'z', t_rep: 'rep', t_ncores: 'ncores', t_cores: 'cores', t_sub: 'sub', t_lsub: 'lsub' };
+ Object.entries(map).forEach(([campo, k]) => $(campo).value = a[k] ?? '');
+ osArtePrev = a.prev || ''; mostrarImg('prevArte', osArtePrev);
+ calcular();
+}
+
+/* ---------- Cálculo ---------- */
+function calcular(recalcRep) {
+ const circ = n('t_z') * PASSO, passoRot = n('t_alt') + n('t_gapv');
+ $('t_circ').value = circ ? circ.toFixed(2) : '';
+ if (recalcRep && circ && passoRot) $('t_rep').value = Math.floor(circ / passoRot);
+ const pistas = n('t_pistas'), rep = n('t_rep'), qtd = n('os_qtd'), perda = n('os_perda');
+ const lutil = pistas * n('t_larg') + Math.max(pistas - 1, 0) * n('t_gaph');
+ $('t_lutil').value = lutil ? lutil.toFixed(1) : '';
+ $('alertaLarg').textContent = (n('t_lsub') && lutil > n('t_lsub')) ? '⚠️ Maior que o substrato!' : '';
+ const porVolta = pistas * rep;
+ $('r_porvolta').textContent = porVolta.toLocaleString('pt-BR');
+ if (!porVolta || !qtd || !circ) { $('r_metros').textContent = '0 m'; $('r_voltas').textContent = '0'; $('r_detalhe').textContent = ''; return 0; }
+ const voltas = Math.ceil(qtd / porVolta);
+ const metrosBase = voltas * circ / 1000, metros = metrosBase * (1 + perda / 100);
+ $('r_voltas').textContent = voltas.toLocaleString('pt-BR');
+ $('r_metros').textContent = metros.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' m';
+ $('r_detalhe').textContent = `${metrosBase.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} m de produção + ${perda}% de perda`;
+ return metros;
+}
+
+/* ---------- Clientes ---------- */
+function salvarCliente() {
+ const c = { id: $('c_id').value || uid(), nome: $('c_nome').value.trim(), doc: $('c_doc').value, tel: $('c_tel').value, contato: $('c_contato').value, email: $('c_email').value };
+ if (!c.nome) return alert('Informe o nome do cliente.');
+ const i = clientes.findIndex(x => x.id === c.id); i >= 0 ? clientes[i] = c : clientes.push(c);
+ db.set('clientes', clientes); limparCliente(); listarClientes(); preencherSelects();
+}
+function limparCliente() { ['c_id', 'c_nome', 'c_doc', 'c_tel', 'c_contato', 'c_email'].forEach(i => $(i).value = ''); }
+function editarCliente(id) { const c = clientes.find(x => x.id === id); $('c_id').value = c.id; $('c_nome').value = c.nome; $('c_doc').value = c.doc; $('c_tel').value = c.tel; $('c_contato').value = c.contato; $('c_email').value = c.email; scrollTo(0, 0); }
+function excluirCliente(id) { if (!confirm('Excluir este cliente?')) return; clientes = clientes.filter(x => x.id !== id); db.set('clientes', clientes); listarClientes(); preencherSelects(); }
+function listarClientes() {
+ $('listaClientes').innerHTML = clientes.map(c => `<tr><td>${esc(c.nome)}</td><td>${esc(c.doc)}</td><td>${esc(c.contato)}</td><td>${esc(c.tel)}</td>
+ <td><button class="btn peq" onclick="editarCliente('${c.id}')">✏️</button> <button class="btn peq vermelho" onclick="excluirCliente('${c.id}')">✕</button></td></tr>`).join('') || '<tr><td colspan="5">Nenhum cliente cadastrado.</td></tr>';
+}
+
+/* ---------- Artes ---------- */
+const camposArte = ['nome', 'cliente', 'larg', 'alt', 'gaph', 'gapv', 'pistas', 'rep', 'z', 'ncores', 'cores', 'sub', 'lsub'];
+function salvarArte() {
+ const a = { id: $('a_id').value || uid(), prev: artePrev };
+ camposArte.forEach(k => a[k] = $('a_' + k).value);
+ if (!a.nome) return alert('Informe o nome da arte.');
+ if (!a.rep && a.z && a.alt) a.rep = Math.floor(a.z * PASSO / (parseFloat(a.alt) + (parseFloat(a.gapv) || 0)));
+ const i = artes.findIndex(x => x.id === a.id); i >= 0 ? artes[i] = a : artes.push(a);
+ db.set('artes', artes); limparArte(); listarArtes(); preencherSelects();
+}
+function limparArte() { $('a_id').value = ''; camposArte.forEach(k => $('a_' + k).value = ''); artePrev = ''; mostrarImg('a_prev', ''); }
+function editarArte(id) { const a = artes.find(x => x.id === id); $('a_id').value = a.id; camposArte.forEach(k => $('a_' + k).value = a[k] ?? ''); artePrev = a.prev || ''; mostrarImg('a_prev', artePrev); scrollTo(0, 0); }
+function excluirArte(id) { if (!confirm('Excluir esta arte?')) return; artes = artes.filter(x => x.id !== id); db.set('artes', artes); listarArtes(); preencherSelects(); }
+const nomeCli = id => (clientes.find(c => c.id === id) || {}).nome || '—';
+function listarArtes(f = '') {
+ f = f.toLowerCase();
+ const l = artes.filter(a => (a.nome + nomeCli(a.cliente)).toLowerCase().includes(f));
+ $('listaArtes').innerHTML = l.map(a => `<tr><td>${a.prev ? `<img src="${a.prev}">` : ''}</td><td>${esc(a.nome)}</td><td>${esc(nomeCli(a.cliente))}</td>
+ <td>${esc(a.larg)} x ${esc(a.alt)} mm</td><td>${esc(a.pistas)} / Z${esc(a.z)}</td>
+ <td><button class="btn peq" onclick="editarArte('${a.id}')">✏️</button> <button class="btn peq vermelho" onclick="excluirArte('${a.id}')">✕</button></td></tr>`).join('') || '<tr><td colspan="6">Nenhuma arte cadastrada.</td></tr>';
+}
+
+/* ---------- Substratos ---------- */
+function addSubstrato() { const s = $('s_nome').value.trim(); if (!s || substratos.includes(s)) return; substratos.push(s); db.set('substratos', substratos); $('s_nome').value = ''; listarSub(); preencherSelects(); }
+function excluirSub(i) { substratos.splice(i, 1); db.set('substratos', substratos); listarSub(); preencherSelects(); }
+function listarSub() { $('listaSub').innerHTML = substratos.map((s, i) => `<tr><td>${esc(s)}</td><td><button class="btn peq vermelho" onclick="excluirSub(${i})">✕</button></td></tr>`).join(''); }
+
+/* ---------- Ordem de Serviço ---------- */
+const camposOS = ['os_data', 'os_prazo', 'os_resp', 'os_status', 'os_cliente', 'os_arte', 'os_qtd', 'os_perda', 'os_ref', 't_larg', 't_alt', 't_gaph', 't_gapv', 't_pistas', 't_z', 't_rep', 't_ncores', 't_cores', 't_sub', 't_lsub', 'os_sentido', 'os_obs'];
+function proximoNumero() { return ordens.reduce((m, o) => Math.max(m, o.numero), 0) + 1; }
+function salvarOS() {
+ if (!$('os_cliente').value) return alert('Selecione o cliente.');
+ const o = osEditando ? ordens.find(x => x.numero === osEditando) : { numero: proximoNumero() };
+ camposOS.forEach(c => o[c] = $(c).value);
+ o.bobina = osBobina; o.artePrev = osArtePrev; o.metros = calcular();
+ o.nomeCliente = $('os_cliente').selectedOptions[0]?.text; o.nomeArte = $('os_arte').value ? $('os_arte').selectedOptions[0].text : '';
+ if (!osEditando) ordens.push(o);
+ osEditando = o.numero; db.set('ordens', ordens);
+ $('numOS').textContent = String(o.numero).padStart(4, '0');
+ alert('OS nº ' + String(o.numero).padStart(4, '0') + ' salva!');
+}
+function novaOS() {
+ osEditando = null; osBobina = ''; osArtePrev = '';
+ camposOS.forEach(c => $(c).value = '');
+ $('os_perda').value = 5; $('os_status').value = 'Aberta'; $('os_data').valueAsDate = new Date();
+ mostrarImg('prevArte', ''); mostrarImg('prevBobina', ''); filtrarArtes();
+ $('numOS').textContent = String(proximoNumero()).padStart(4, '0'); calcular();
+}
+function abrirOS(num) {
+ const o = ordens.find(x => x.numero === num); osEditando = num;
+ $('os_cliente').value = o.os_cliente; filtrarArtes();
+ camposOS.forEach(c => $(c).value = o[c] ?? '');
+ osBobina = o.bobina || ''; osArtePrev = o.artePrev || '';
+ mostrarImg('prevBobina', osBobina); mostrarImg('prevArte', osArtePrev);
+ $('numOS').textContent = String(num).padStart(4, '0'); calcular();
+ aba('os', document.querySelector('nav button'));
+}
+function excluirOS(num) { if (!confirm('Excluir esta OS?')) return; ordens = ordens.filter(x => x.numero !== num); db.set('ordens', ordens); listarHist(); }
+function listarHist(f = '') {
+ f = f.toLowerCase();
+ const l = ordens.filter(o => (o.numero + ' ' + o.nomeCliente + ' ' + o.nomeArte).toLowerCase().includes(f)).sort((a, b) => b.numero - a.numero);
+ $('listaHist').innerHTML = l.map(o => `<tr><td>${String(o.numero).padStart(4, '0')}</td><td>${o.os_data ? o.os_data.split('-').reverse().join('/') : ''}</td>
+ <td>${esc(o.nomeCliente)}</td><td>${esc(o.nomeArte)}</td><td>${(+o.os_qtd || 0).toLocaleString('pt-BR')}</td><td>${(o.metros || 0).toFixed(1)} m</td><td>${esc(o.os_status)}</td>
+ <td><button class="btn peq" onclick="abrirOS(${o.numero})">Abrir</button> <button class="btn peq vermelho" onclick="excluirOS(${o.numero})">✕</button></td></tr>`).join('') || '<tr><td colspan="8">Nenhuma OS salva.</td></tr>';
+}
+
+/* ---------- Backup ---------- */
+function exportar() {
+ const dados = { clientes, artes, substratos, ordens, empresa: db.get('empresa', {}) };
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(new Blob([JSON.stringify(dados)], { type: 'application/json' }));
+ a.download = 'backup-os-rotulos-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+}
+function importar(input) {
+ const r = new FileReader();
+ r.onload = e => {
+  const d = JSON.parse(e.target.result);
+  if (!confirm('Substituir os dados atuais pelo backup?')) return;
+  ['clientes', 'artes', 'substratos', 'ordens', 'empresa'].forEach(k => d[k] && db.set(k, d[k]));
+  location.reload();
+ };
+ r.readAsText(input.files[0]);
+}
+
+/* ---------- Início ---------- */
+const emp = db.get('empresa', {});
+document.querySelectorAll('.emp').forEach(el => { el.value = emp[el.id] || ''; el.addEventListener('change', () => { emp[el.id] = el.value; db.set('empresa', emp); }); });
+['os_qtd'].forEach(id => $(id).addEventListener('input', () => calcular()));
+preencherSelects(); listarClientes(); listarArtes(); listarSub(); novaOS();
+</script>
+</body>
+</html>
